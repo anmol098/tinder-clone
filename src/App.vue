@@ -1,32 +1,54 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-main>
+      <swipe-cards v-if="isMobile"></swipe-cards>
+      <v-overlay :value="!isMobile" opacity="1">
+        <v-card
+            elevation="2"
+        >
+          Use mobile device for better experience or resize this window
+        </v-card>
+      </v-overlay>
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import swipeCards from '@/components/swipeCards'
 
-#nav {
-  padding: 30px;
+export default {
+  name: 'App',
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+  components: {
+    swipeCards,
+  },
+  computed:{
+    isMobile(){
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs':
+          return true
+        case 'sm':
+          return true
+        case 'md':
+          return true
+        case 'lg':
+          return false
+        case 'xl':
+         return false
+        default:
+          return true
+      }
     }
-  }
-}
-</style>
+  },
+  created() {
+    let myWindow
+    console.log(this.$vuetify.breakpoint.name);
+
+    //let myWindow = window.open(window.location.href, "", "width=250, height=250");
+  },
+
+  data: () => ({
+    //
+  }),
+};
+</script>

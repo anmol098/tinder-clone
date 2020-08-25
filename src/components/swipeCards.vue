@@ -1,66 +1,110 @@
 <template>
-  <section class="container">
-    <div class="fixed header">
-      <i class="material-icons" @click="index = 0">refresh</i>
-      <span>PINDER</span>
-      <i class="material-icons">tune</i>
-    </div>
-    <div
-        v-if="current"
-        class="fixed fixed--center"
-        style="z-index: 3"
-        :class="{ 'transition': isVisible }">
-      <Vue2InteractDraggable
-          v-if="isVisible"
-          :interact-out-of-sight-x-coordinate="500"
-          :interact-max-rotation="15"
-          :interact-x-threshold="200"
-          :interact-y-threshold="200"
-          :interact-event-bus-events="interactEventBus"
-          interact-block-drag-down
-          @draggedRight="emitAndNext('match')"
-          @draggedLeft="emitAndNext('reject')"
-          @draggedUp="emitAndNext('skip')"
-          class="rounded-borders card card--one">
+  <section class="section">
+    <div class="container">
+      <div class="fixed header">
+        <i class="material-icons">account_circle</i>
+        <span>PINDER</span>
+        <i class="material-icons">chat_bubble_outline</i>
+      </div>
+      <div
+          v-if="current"
+          class="fixed fixed--center"
+          style="z-index: 3"
+          :class="{ 'transition': isVisible }">
+        <Vue2InteractDraggable
+            v-if="isVisible"
+            :interact-out-of-sight-x-coordinate="500"
+            :interact-max-rotation="15"
+            :interact-x-threshold="200"
+            :interact-y-threshold="200"
+            :interact-event-bus-events="interactEventBus"
+            interact-block-drag-down
+            @draggedRight="emitAndNext('match')"
+            @draggedLeft="emitAndNext('reject')"
+            @draggedUp="emitAndNext('skip')"
+            class="rounded-borders card card--one">
+          <div style="height: 100%">
+            <img
+                :src="current.src"
+                class="rounded-borders"/>
+            <div class="text">
+              <h2>{{ current.name }}, <span>{{ current.age }}</span></h2>
+            </div>
+          </div>
+        </Vue2InteractDraggable>
+      </div>
+      <div
+          v-if="next"
+          class="rounded-borders card card--two fixed fixed--center"
+          style="z-index: 2">
         <div style="height: 100%">
           <img
-              :src="current.src"
+              :src="next.src"
               class="rounded-borders"/>
           <div class="text">
-            <h2>{{ current.name }}, <span>{{ current.age }}</span></h2>
+            <h2>{{ next.name }}, <span>{{ next.age }}</span></h2>
           </div>
         </div>
-      </Vue2InteractDraggable>
-    </div>
-    <div
-        v-if="next"
-        class="rounded-borders card card--two fixed fixed--center"
-        style="z-index: 2">
-      <div style="height: 100%">
-        <img
-            :src="next.src"
-            class="rounded-borders"/>
-        <div class="text">
-          <h2>{{ next.name }}, <span>{{ next.age }}</span></h2>
+      </div>
+      <div
+          v-if="index + 2 < cards.length"
+          class="rounded-borders card card--four fixed fixed--center"
+          style="z-index: 1">
+        <div style="height: 100%">
         </div>
       </div>
-    </div>
-    <div
-        v-if="index + 2 < cards.length"
-        class="rounded-borders card card--four fixed fixed--center"
-        style="z-index: 1">
-      <div style="height: 100%">
-      </div>
-    </div>
-    <div class="footer fixed">
-      <div class="btn btn--decline" @click="reject">
-        <i class="material-icons">close</i>
-      </div>
-      <div class="btn btn--skip" @click="skip">
-        <i class="material-icons">star_rate</i>
-      </div>
-      <div class="btn btn--like" @click="match">
-        <i class="material-icons">favorite</i>
+      <div class="footer fixed">
+        <v-btn
+            class="mx-2"
+            fab
+            large
+            @click="index = 0"
+        >
+          <v-icon color="amber darken-1" large>
+            mdi-reload
+          </v-icon>
+        </v-btn>
+        <v-btn
+            class="mx-2"
+            fab
+            large
+            color="white"
+            @click="reject"
+        >
+          <v-icon color="pink lighten-1" large>
+            mdi-close
+          </v-icon>
+        </v-btn>
+        <v-btn
+            class="mx-2"
+            fab
+            large
+            color="white"
+            @click="skip"
+        >
+          <v-icon color="purple lighten-2" large>
+            mdi-star
+          </v-icon>
+        </v-btn>
+        <v-btn
+            class="mx-2"
+            fab
+            large
+            @click="match"
+        >
+          <v-icon color="pink lighten-2" large>
+            mdi-heart
+          </v-icon>
+        </v-btn>
+        <v-btn
+            class="mx-2"
+            fab
+            large
+        >
+          <v-icon color="purple darken-2" large>
+            mdi-flash
+          </v-icon>
+        </v-btn>
       </div>
     </div>
   </section>
@@ -98,22 +142,7 @@ export default {
     }
   },
   created() {
-    axios.get(`https://randomuser.me/api/?results=50`)
-        .then(response => {
-          let peoples = response.data.results;
-          peoples.forEach(people => {
-            let obj = {};
-            obj.name = people.name.first;
-            obj.src = people.picture.large;
-            obj.age = people.dob.age;
-
-            this.cards.push(obj);
-          })
-
-        })
-        .catch(e => {
-          this.errors.push(e)
-        })
+    this.getPeople()
   },
   methods: {
     match() {
@@ -133,31 +162,38 @@ export default {
         this.isVisible = true
       }, 200)
     },
+    getPeople() {
+      axios.get(`https://randomuser.me/api/?results=50`)
+          .then(response => {
+            let peoples = response.data.results;
+            peoples.forEach(people => {
+              let obj = {};
+              obj.name = people.name.first +" "+ people.name.last;
+              obj.src = people.picture.large;
+              obj.age = people.dob.age;
+              this.cards.push(obj);
+            })
+
+          })
+          .catch(e => {
+            this.errors.push(e)
+          })
+    },
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.container {
-  background: #eceff1;
-  width: 100%;
-  height: 100vh;
-}
-
 .header {
   width: 100%;
   height: 60vh;
   z-index: 0;
   top: 0;
   left: 0;
-  color: white;
+  color: #f953c6;
   text-align: center;
   font-style: italic;
   font-family: 'Engagement', cursive;
-  background: #f953c6;
-  background: -webkit-linear-gradient(to top, #b91d73, #f953c6);
-  background: linear-gradient(to top, #b91d73, #f953c6);
-  clip-path: polygon(0 1%, 100% 0%, 100% 76%, 0 89%);
   display: flex;
   justify-content: space-between;
 
@@ -210,25 +246,6 @@ export default {
     &::before {
       content: '';
     }
-  }
-
-  &--like {
-    background-color: red;
-    padding: .5rem;
-    color: white;
-    box-shadow: 0 10px 13px -6px rgba(0, 0, 0, .2), 0 20px 31px 3px rgba(0, 0, 0, .14), 0 8px 38px 7px rgba(0, 0, 0, .12);
-
-    i {
-      font-size: 32px;
-    }
-  }
-
-  &--decline {
-    color: red;
-  }
-
-  &--skip {
-    color: green;
   }
 }
 

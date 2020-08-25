@@ -4,6 +4,7 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import './assets/sass/main.scss'
+import vuetify from './plugins/vuetify';
 
 
 Vue.config.productionTip = false
@@ -11,6 +12,8 @@ Vue.config.productionTip = false
 new Vue({
     router,
     store,
+    vuetify,
+
     render: function (h) {
         return h(App)
     }
