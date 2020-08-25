@@ -6,6 +6,10 @@ Topics revised VueJs, Vuetify components, and basic CSS
 
 [#15Days_days_of_development]()
 
+# Screenshot
+
+![tinder-clone vercel app-375x667](https://user-images.githubusercontent.com/15426564/91179356-0354dc80-e704-11ea-8a07-54ea7f95ecbd.png)
+
 ## Project setup
 ```
 npm install
